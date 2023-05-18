@@ -1,0 +1,30 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+    <h1>All venues</h1><br/>
+{% for venue in venues %}
+    <div class="card">
+  <div class="card-header">
+    {{ venue.name }} - {{ venue.address }}
+  </div>
+    <div class="card-body">
+    <p class="card-text"><ul>
+            {% if venue.phone %}
+                <li>Phone: {{ venue.phone }}</li>
+            {% endif %}
+            {% if venue.web %}
+                <li>Webpage: {{ venue.web }}</li>
+            {% endif %}
+            {% if venue.postal_code %}
+                <li>ZIP code: {{ venue.postal_code }}</li>
+            {% endif %}
+            {% if venue.email %}
+                <li>Email: {{ venue.email }}</li>
+            {% endif %}
+    </ul></p>
+  </div>
+</div>
+
+    <br/>
+{% endfor %}
+{% endblock %}

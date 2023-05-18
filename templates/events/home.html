@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Homepage</title>
-
-</head>
-<body>
-    <h1>Welcome {{ name }}!</h1>
-</body>
-</html>
+{% extends 'base/base.html' %}
+{% block content %}
+    <style>
+        h1 {text-align: center;}
+    </style>
+    <h1>Hello {{ name }} Events for {{ month }} {{ year }}</h1>
+{% endblock %}
