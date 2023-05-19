@@ -1,6 +1,9 @@
 {% extends 'base/base.html' %}
 
 {% block content %}
+    <style>
+        p { text-align: right; }
+    </style>
     <h1>All venues</h1><br/>
         {% for venue in venues %}
 
@@ -24,6 +27,8 @@
             {% if venue.email %}
                 <li>Email: {{ venue.email }}</li>
             {% endif %}
+                </td>
+        <td><p><a href="{% url 'update-venue' venue.id %}" class="btn btn-outline-secondary">Update</a></p>
     </ul></td>
   </tr>
 </table>

@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import ClubUser, Venue, Event
 from .forms import VenueForm
 from django.http import HttpResponseRedirect
@@ -35,3 +35,23 @@ def add_venue(request):
 def show_venue_by_id(request, venue_id):
     venue = Venue.objects.get(pk=venue_id)
     return render(request, 'events/show_venue.html', {"venue": venue})
+
+
+def search_for_venues(request):
+    if request.method == "POST":
+        searcher = request.POST.get("searcher", False)
+        venues = Venue.objects.filter(name__contains=searcher)
+        return render(request, 'events/search_for_venues.html',
+                      {'searcher': searcher, 'venues': venues})
+    else:
+        return render(request, 'events/search_for_venues.html',
+                      {})
+
+
+def update_venue(request, venue_id):
+    venue = Venue.objects.get(pk=venue_id)
+    form = VenueForm(request.POST or None, instance=venue)
+    if form.is_valid():
+        form.save()
+        return redirect('venues')
+    return render(request, 'events/update_venue.html', {"venue": venue, 'form': form})

@@ -1,0 +1,13 @@
+{% extends 'base/base.html' %}
+{% block content %}
+    {% if searcher %}
+        <h1>Result of your search:</h1>
+        <br/>
+            {% for venue in venues %}
+                <a href="{% url 'show-venue' venue.id %}">{{ venue.name }}</a> -
+                <a href="{{ venue.web }}">{{ venue.web }}
+            {% endfor %}
+    {% else %}
+        <h1>You forgot to enter a venue!</h1>
+    {% endif %}
+{% endblock %}
