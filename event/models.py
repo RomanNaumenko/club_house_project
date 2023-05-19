@@ -19,6 +19,7 @@ class Venue(models.Model):
     email = models.EmailField('Email of the venue', blank=True)
     phone = models.CharField('Contacts number', max_length=12, blank=True)
     web = models.URLField('Web page', blank=True)
+    desc = models.TextField(blank=True)
 
     def __str__(self):
         return self.name

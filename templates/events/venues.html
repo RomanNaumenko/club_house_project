@@ -2,13 +2,16 @@
 
 {% block content %}
     <h1>All venues</h1><br/>
-{% for venue in venues %}
-    <div class="card">
-  <div class="card-header">
-    {{ venue.name }} - {{ venue.address }}
-  </div>
-    <div class="card-body">
-    <p class="card-text"><ul>
+        {% for venue in venues %}
+
+    <table class="table table-striped
+    table-hover table-bordered">
+
+    <tr>
+        <td>
+
+      <a href="{% url 'show-venue' venue.id %}">{{ venue.name }}</a> - {{ venue.address }}
+            <ul>
             {% if venue.phone %}
                 <li>Phone: {{ venue.phone }}</li>
             {% endif %}
@@ -21,9 +24,9 @@
             {% if venue.email %}
                 <li>Email: {{ venue.email }}</li>
             {% endif %}
-    </ul></p>
-  </div>
-</div>
+    </ul></td>
+  </tr>
+</table>
 
     <br/>
 {% endfor %}

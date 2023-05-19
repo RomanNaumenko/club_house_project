@@ -8,14 +8,17 @@ admin.site.register(ClubUser)
 
 @admin.register(Venue)
 class VenueAdmin(admin.ModelAdmin):
-    list_display = ('name', 'address', 'phone')
+    list_display = ('name', 'address', 'phone', 'web', 'postal_code', 'email')
     ordering = ('name',)
     search_fields = ('name', 'address')
 
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    fields = (('name', 'venue'), 'event_date', 'desc', 'manager')
-    list_display = ('name', 'event_date')
+    fields = (('name', 'venue'), 'event_date', 'desc', 'manager', 'visitors')
+    list_display = ('name', 'event_date', 'get_visitors')
     list_filter = ('event_date', 'venue')
     ordering = ('-event_date',)
+
+    def get_visitors(self, obj):
+        return ", ".join([f"{every.first_name} {every.last_name}" for every in obj.visitors.all()])

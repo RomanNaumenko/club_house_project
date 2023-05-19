@@ -1,10 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+{% extends 'base/base.html' %}
+{% block content %}
+    <h1> {{ venue.name }} :</h1><br/>
+ {% if venue.web %}{% endif %}<br/>
+  <div class="card">
+  <div class="card-body">
+    <h5 class="card-title">{{ venue.address }}</h5><br/>
+    <p class="card-text"><ul>
+        {% if venue.email %}<li>Email: {{ venue.email}}</li>{% endif %}
+        {% if venue.phone %}<li>Phone: {{ venue.phone}}</li>{% endif %}
+        {% if venue.postal_code %}<li>ZIP Code: {{ venue.postal_code}}</li>{% endif %}
+        {% if venue.web %}<li>Web page: <a href="{{venue.web}}">{{ venue.web}}</a></li>{% endif %}
+        {% if venue.desc %}<li>Description:{{ venue.desc}}</li>{% endif %}
+    </ul></p>
+  </div>
+</div>
+{% endblock %}
