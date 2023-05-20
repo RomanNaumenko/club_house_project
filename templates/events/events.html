@@ -5,20 +5,31 @@
 {% for event in events %}
     <div class="card">
   <div class="card-header">
-    {{ event.name }}
-  </div>
+      <h3>{{ event.name }}</h3>
   <div class="card-body">
-    <h5 class="card-title">{{ event.venue }}, {{ event.venue.address }}</h5>
+      <h5 class="card-title"><a href="% url 'show-venue' event.venue.id %">{{ event.venue }}</a>, {{ event.venue.address }}</h5>
     <p class="card-text"><ul>
+      {% if event.event_date %}
         <li>Date: {{ event.event_date }}</li>
+      {% endif %}
+      {% if event.desc %}
         <li> Description: {{ event.desc }}</li>
+      {% endif %}
+      {% if event.manager %}
         <li> Manager: {{ event.manager }}</li>
+      {% endif %}
+      {% if event.visitors %}
         <li>Visitors:<br/>
         {% for visitor in event.visitors.all %}
             {{ visitor }},
         {% endfor %}</li>
-    </ul></p>
+      {% endif %}
+    </ul>
+
   </div>
+      <div class="card-footer text-muted">
+      <a href="{% url 'update-event' event.id %}" class="btn btn-outline-secondary btn-sm">Update</a>
+      </div></p>
 </div>
 
     <br/>
