@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import ClubUser, Venue, Event
-from .forms import VenueForm
+from .forms import VenueForm, EventForm
 from django.http import HttpResponseRedirect
 
 
@@ -55,3 +55,16 @@ def update_venue(request, venue_id):
         form.save()
         return redirect('venues')
     return render(request, 'events/update_venue.html', {"venue": venue, 'form': form})
+
+
+def add_event(request):
+    submitted = False
+    if request.method == "POST":
+        form = EventForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/home/add_event?submitted=True')
+    form = EventForm
+    if 'submitted' in request.GET:
+        submitted = True
+    return render(request, 'events/add_event.html', {'form': form, 'submitted': submitted})
