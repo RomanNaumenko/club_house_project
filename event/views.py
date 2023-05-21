@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import ClubUser, Venue, Event
 from .forms import VenueForm, EventForm
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 
 
 # Create your views here.
@@ -90,3 +90,21 @@ def delete_venue(request, venue_id):
     venue = Venue.objects.get(pk=venue_id)
     venue.delete()
     return redirect('venues')
+
+
+def venue_text_download(request):
+    response = HttpResponse(content_type='text/plain')
+    response['Content-Disposition'] = 'attachment; filename=venues_list.txt'
+    venues = Venue.objects.all()
+
+    for venue in venues:
+        venue_lines = [f"Venue name: {venue.name}\n",
+                       f"Venue address: {venue.address}\n",
+                       f"Venue postal_code: {venue.postal_code}\n",
+                       f"Venue email: {venue.email}\n",
+                       f"Venue phone: {venue.phone}\n",
+                       f"Venue web: {venue.web}\n",
+                       f"Venue desc: {venue.desc}\n\n\n"]
+
+        response.writelines(venue_lines)
+    return response
