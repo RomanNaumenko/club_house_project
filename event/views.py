@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from .models import ClubUser, Venue, Event
 from .forms import VenueForm, EventForm
 from django.http import HttpResponseRedirect, HttpResponse
+import csv
+import datetime
 
 
 # Create your views here.
@@ -93,8 +95,9 @@ def delete_venue(request, venue_id):
 
 
 def venue_text_download(request):
+    date = datetime.datetime.now().date()
     response = HttpResponse(content_type='text/plain')
-    response['Content-Disposition'] = 'attachment; filename=venues_list.txt'
+    response['Content-Disposition'] = f'attachment; filename=venues_list_{date}.txt'
     venues = Venue.objects.all()
 
     for venue in venues:
@@ -107,4 +110,20 @@ def venue_text_download(request):
                        f"Venue desc: {venue.desc}\n\n\n"]
 
         response.writelines(venue_lines)
+    return response
+
+
+def venue_csv_download(request):
+    date = datetime.datetime.now().date()
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename=venues_list_{date}.csv'
+    venues = Venue.objects.all()
+
+    rows = [['Venue Name', 'Address', 'ZIP Code', 'Email', 'Phone', 'Web', 'Description']]
+    for venue in venues:
+        rows.append([venue.name, venue.address, venue.postal_code, venue.email,
+                     venue.phone, venue.web, venue.desc])
+
+    writer = csv.writer(response)
+    writer.writerows(rows)
     return response
