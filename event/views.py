@@ -10,12 +10,13 @@ def home(request):
 
 
 def all_events(request):
-    events = Event.objects.all()
+    events = Event.objects.all().order_by('-event_date', 'venue')
     return render(request, 'events/events.html', {"events": events})
 
 
 def all_venues(request):
-    venues = Venue.objects.all()
+    # venues = Venue.objects.all().order_by('?')
+    venues = Venue.objects.all().order_by('name')
     return render(request, 'events/venues.html', {"venues": venues})
 
 
