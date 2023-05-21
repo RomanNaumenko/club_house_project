@@ -1,9 +1,14 @@
+import io
+
 from django.shortcuts import render, redirect
 from .models import ClubUser, Venue, Event
 from .forms import VenueForm, EventForm
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, FileResponse
 import csv
 import datetime
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import letter
 
 
 # Create your views here.
@@ -127,3 +132,39 @@ def venue_csv_download(request):
     writer = csv.writer(response)
     writer.writerows(rows)
     return response
+
+
+def venue_pdf_download(request):
+    date = datetime.datetime.now().date()
+    #  Create Bytestream buffer
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
+    #  Create Test Object
+    text_object = c.beginText()
+    text_object.setTextOrigin(inch, inch)
+    text_object.setFont("Helvetica", 14)
+
+    #  Add some lines
+    venues = Venue.objects.all()
+    lines = []
+    for venue in venues:
+        lines.append(f"Venue name: {venue.name}")
+        lines.append(f"Venue address: {venue.address}")
+        lines.append(f"Venue postal_code: {venue.postal_code}")
+        lines.append(f"Venue email: {venue.email}")
+        lines.append(f"Venue phone: {venue.phone}")
+        lines.append(f"Venue web: {venue.web}")
+        lines.append(f"Venue desc: {venue.desc}")
+        lines.append("_______________________________________________")
+        lines.append(" ")
+        lines.append(" ")
+
+    for line in lines:
+        text_object.textLine(line)
+
+    c.drawText(text_object)
+    c.showPage()
+    c.save()
+    buf.seek(0)
+
+    return FileResponse(buf, as_attachment=True, filename=f'venue_list_{date}.pdf')
