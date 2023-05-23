@@ -1,5 +1,5 @@
 import io
-
+from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from .models import ClubUser, Venue, Event
 from .forms import VenueForm, EventForm
@@ -23,8 +23,12 @@ def all_events(request):
 
 def all_venues(request):
     # venues = Venue.objects.all().order_by('?')
-    venues = Venue.objects.all().order_by('name')
-    return render(request, 'events/venues.html', {"venues": venues})
+    # venues = Venue.objects.all().order_by('name')
+    pagy = Paginator(Venue.objects.all(), 2)
+    page = request.GET.get('page')
+    venues = pagy.get_page(page)
+    nums = "a" * venues.paginator.num_pages
+    return render(request, 'events/venues.html', {"venues": venues, 'nums': nums})
 
 
 def add_venue(request):
