@@ -22,4 +22,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('home/', include('event.urls')),
     path('calendar/', include('calendario.urls')),
+    path('members/', include('club_members.urls')),
+    path('members/', include('django.contrib.auth.urls')),
 ]
+
+admin.site.site_header = "Club House Administration"
+admin.site.site_title = "Browser Title"
+admin.site.index_title = "Welcome to the Admin area"

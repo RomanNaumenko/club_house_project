@@ -13,7 +13,7 @@ from reportlab.lib.pagesizes import letter
 
 # Create your views here.
 def home(request):
-    return render(request, 'events/home.html', {"name": "Roman"})
+    return render(request, 'events/home.html', {"name": request.user})
 
 
 def all_events(request):
