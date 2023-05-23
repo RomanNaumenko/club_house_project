@@ -19,3 +19,10 @@ def member_login(request):
 
     elif request.method == "GET":
         return render(request, 'authentication/login.html', {})
+
+
+def member_logout(request):
+    logout(request)
+    messages.success(request, "You were successfully logged out")
+    return redirect('home')
+
