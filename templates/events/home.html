@@ -2,7 +2,25 @@
 {% block content %}
     <style>
         h1 {text-align: center;}
+        h5 {text-align: center;}
     </style>
     {% csrf_token %}
-    <h1>Hello {{ username }}! </h1>
+    {% if name %}
+        <h1>Hello {{ name }}! </h1>
+    {% else %}
+<h1>Hello! </h1>
+<br/>
+<h5>Please <a href="http://127.0.0.1:8000/members/login/">login</a> in order to take part in events</h5>
+    {% endif %}
+    {% if superuser_events %}
+        {% for event in superuser_event %}
+            <a>event</a>
+        {% endfor %}
+    {% endif %}
+    {% if user_events %}
+        {% for event in user_events %}
+            <a>event</a>
+        {% endfor %}
+    {% endif %}
 {% endblock %}
+

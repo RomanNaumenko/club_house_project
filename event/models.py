@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 class ClubUser(models.Model):
     first_name = models.CharField('User name', max_length=100)
     last_name = models.CharField('User second name', max_length=100)
+    username = models.CharField('Username', max_length=100, unique=True, null=False)
     email = models.EmailField('Email of the User')
     phone = models.CharField('User phone number', max_length=12)
 

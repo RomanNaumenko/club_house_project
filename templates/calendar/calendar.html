@@ -13,9 +13,11 @@
           }
 
     </style>
-
+    {% if username %}
+        <h2>Hello {{ username }}, It`s {{ month }} of {{ year }}</h2>
+    {% else %}
         <h2>Hello, It`s {{ month }} of {{ year }}</h2>
-
+    {% endif %}
         {% if time %}
             <p> {{ time }} </p>
         {% endif %}

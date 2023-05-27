@@ -9,11 +9,29 @@ import datetime
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import letter
+from django.core.exceptions import PermissionDenied
+from django.contrib import messages
 
 
 # Create your views here.
 def home(request):
-    return render(request, 'events/home.html', {"name": request.user})
+
+    username = None
+    superuser_events = None
+    user_events = None
+
+    if request.user.is_superuser:
+        superuser_events = Event.objects.all().order_by("event_date")
+    if request.user.is_authenticated:
+
+        username = request.user.get_username()
+        user_by_username = ClubUser.objects.filter(username=username).first()
+        if user_by_username:
+            user_id = user_by_username.id
+            user_events = Event.objects.filter(visitors__id=user_id)
+
+    return render(request, 'events/home.html', {"name": username, "superuser_events": superuser_events,
+                                                "user_events": user_events})
 
 
 def all_events(request):
@@ -32,16 +50,22 @@ def all_venues(request):
 
 
 def add_venue(request):
-    submitted = False
-    if request.method == "POST":
-        form = VenueForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/home/add_venue?submitted=True')
-    form = VenueForm
-    if 'submitted' in request.GET:
-        submitted = True
-    return render(request, 'events/add_venue.html', {'form': form, 'submitted': submitted})
+    if request.user.is_superuser:
+
+        submitted = False
+        if request.method == "POST":
+            form = VenueForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect('/home/add_venue?submitted=True')
+        form = VenueForm
+        if 'submitted' in request.GET:
+            submitted = True
+        return render(request, 'events/add_venue.html', {'form': form, 'submitted': submitted})
+    else:
+
+        messages.success(request, "Before you will be able to add venues, you must log in first.")
+        return redirect('member-login')
 
 
 def show_venue_by_id(request, venue_id):
@@ -61,34 +85,52 @@ def search_for_venues(request):
 
 
 def update_venue(request, venue_id):
-    venue = Venue.objects.get(pk=venue_id)
-    form = VenueForm(request.POST or None, instance=venue)
-    if form.is_valid():
-        form.save()
-        return redirect('venues')
-    return render(request, 'events/update_venue.html', {"venue": venue, 'form': form})
+    if request.user.is_superuser:
+
+        venue = Venue.objects.get(pk=venue_id)
+        form = VenueForm(request.POST or None, instance=venue)
+        if form.is_valid():
+            form.save()
+            return redirect('venues')
+        return render(request, 'events/update_venue.html', {"venue": venue, 'form': form})
+    else:
+
+        messages.success(request, "Before you will be able to add venues, you must log in first.")
+        return redirect('member-login')
 
 
 def add_event(request):
-    submitted = False
-    if request.method == "POST":
-        form = EventForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/home/add_event?submitted=True')
-    form = EventForm
-    if 'submitted' in request.GET:
-        submitted = True
-    return render(request, 'events/add_event.html', {'form': form, 'submitted': submitted})
+    if request.user.is_superuser:
+
+        submitted = False
+        if request.method == "POST":
+            form = EventForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect('/home/add_event?submitted=True')
+        form = EventForm
+        if 'submitted' in request.GET:
+            submitted = True
+        return render(request, 'events/add_event.html', {'form': form, 'submitted': submitted})
+    else:
+
+        messages.success(request, "Before you will be able to add venues, you must log in first.")
+        return redirect('member-login')
 
 
 def update_event(request, event_id):
-    event = Event.objects.get(pk=event_id)
-    form = EventForm(request.POST or None, instance=event)
-    if form.is_valid():
-        form.save()
-        return redirect('events')
-    return render(request, 'events/update_event.html', {"event": event, 'form': form})
+    if request.user.is_superuser:
+
+        event = Event.objects.get(pk=event_id)
+        form = EventForm(request.POST or None, instance=event)
+        if form.is_valid():
+            form.save()
+            return redirect('events')
+        return render(request, 'events/update_event.html', {"event": event, 'form': form})
+    else:
+
+        messages.success(request, "Before you will be able to add venues, you must log in first.")
+        return redirect('member-login')
 
 
 def delete_event(request, event_id):
