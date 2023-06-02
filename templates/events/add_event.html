@@ -4,6 +4,7 @@
     h1 {text-align: center;}
 </style>
 {% block content %}
+{% if user.is_authenticated %}
     <h1>Add Event to Database</h1>
     <br/>
     <br/>
@@ -18,4 +19,7 @@
         </form>
     {% endif %}
 
+{% else %}
+<h5>You need <a href="% url '' %">register</a> or <a>login</a> first!</h5>
+{% endif %}
 {% endblock %}
