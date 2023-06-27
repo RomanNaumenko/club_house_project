@@ -11,7 +11,8 @@
         {% if venue.postal_code %}<li>ZIP Code: {{ venue.postal_code}}</li>{% endif %}
         {% if venue.web %}<li>Web page: <a href="{{venue.web}}">{{ venue.web}}</a></li>{% endif %}
         {% if venue.desc %}<li>Description:{{ venue.desc}}</li>{% endif %}
-    </ul></p>
+        <li>Owner: {{ venue_owner }}</li>
+    </ul>
   </div>
 </div>
 {% endblock %}

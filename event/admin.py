@@ -1,8 +1,8 @@
 from django.contrib import admin
-from .models import Venue, ClubUser, Event
+from .models import Venue, Event
+from django.contrib.auth.models import User
 
 # admin.site.register(Venue)
-admin.site.register(ClubUser)
 # admin.site.register(Event)
 
 

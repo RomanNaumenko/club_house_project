@@ -1,8 +1,8 @@
 import io
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
-from .models import ClubUser, Venue, Event
-from .forms import VenueForm, EventForm
+from .models import Venue, Event
+from .forms import VenueForm, RegularUserEventForm, SuperUserEventForm
 from django.http import HttpResponseRedirect, HttpResponse, FileResponse
 import csv
 import datetime
@@ -10,12 +10,12 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import letter
 from django.core.exceptions import PermissionDenied
+from django.contrib.auth.models import User
 from django.contrib import messages
 
 
 # Create your views here.
 def home(request):
-
     username = None
     superuser_events = None
     user_events = None
@@ -23,15 +23,10 @@ def home(request):
     if request.user.is_superuser:
         superuser_events = Event.objects.all().order_by("event_date")
     if request.user.is_authenticated:
+        pass
 
-        username = request.user.get_username()
-        user_by_username = ClubUser.objects.filter(username=username).first()
-        if user_by_username:
-            user_id = user_by_username.id
-            user_events = Event.objects.filter(visitors__id=user_id)
-
-    return render(request, 'events/home.html', {"name": username, "superuser_events": superuser_events,
-                                                "user_events": user_events})
+    return render(request, 'calendar/calendar.html', {"name": username, "superuser_events": superuser_events,
+                                                      "user_events": user_events})
 
 
 def all_events(request):
@@ -56,7 +51,9 @@ def add_venue(request):
         if request.method == "POST":
             form = VenueForm(request.POST)
             if form.is_valid():
-                form.save()
+                venue = form.save(commit=False)
+                venue.owner = request.user.id
+                venue.save()
                 return HttpResponseRedirect('/home/add_venue?submitted=True')
         form = VenueForm
         if 'submitted' in request.GET:
@@ -70,7 +67,8 @@ def add_venue(request):
 
 def show_venue_by_id(request, venue_id):
     venue = Venue.objects.get(pk=venue_id)
-    return render(request, 'events/show_venue.html', {"venue": venue})
+    venue_owner = User.objects.get(pk=venue.owner)
+    return render(request, 'events/show_venue.html', {"venue": venue, "venue_owner": venue_owner})
 
 
 def search_for_venues(request):
@@ -85,7 +83,7 @@ def search_for_venues(request):
 
 
 def update_venue(request, venue_id):
-    if request.user.is_superuser:
+    if request.user.is_authenticated:
 
         venue = Venue.objects.get(pk=venue_id)
         form = VenueForm(request.POST or None, instance=venue)
@@ -93,6 +91,7 @@ def update_venue(request, venue_id):
             form.save()
             return redirect('venues')
         return render(request, 'events/update_venue.html', {"venue": venue, 'form': form})
+
     else:
 
         messages.success(request, "Before you will be able to add venues, you must log in first.")
@@ -100,18 +99,30 @@ def update_venue(request, venue_id):
 
 
 def add_event(request):
-    if request.user.is_superuser:
+    if request.user.is_authenticated:
 
         submitted = False
         if request.method == "POST":
-            form = EventForm(request.POST)
-            if form.is_valid():
-                form.save()
-                return HttpResponseRedirect('/home/add_event?submitted=True')
-        form = EventForm
+            if request.user.is_superuser:
+                form = SuperUserEventForm(request.POST)
+                if form.is_valid():
+                    form.save()
+                    return HttpResponseRedirect('/home/add_event?submitted=True')
+            else:
+                form = RegularUserEventForm(request.POST)
+
+                if form.is_valid():
+                    event = form.save(commit=False)
+                    event.manager = request.user
+                    event.save()
+                    return HttpResponseRedirect('/home/add_event?submitted=True')
+        if request.user.is_superuser:
+            form = SuperUserEventForm
+        else:
+            form = RegularUserEventForm
         if 'submitted' in request.GET:
             submitted = True
-        return render(request, 'events/add_event.html', {'form': form, 'submitted': submitted})
+        return render(request, 'events/add_event.html', {'form': form, 'submitted': submitted, 'user': request.user})
     else:
 
         messages.success(request, "Before you will be able to add venues, you must log in first.")
@@ -119,14 +130,16 @@ def add_event(request):
 
 
 def update_event(request, event_id):
-    if request.user.is_superuser:
-
+    if request.user.is_authenticated:
         event = Event.objects.get(pk=event_id)
-        form = EventForm(request.POST or None, instance=event)
+        if request.user.is_superuser:
+            form = SuperUserEventForm(request.POST or None, instance=event)
+        else:
+            form = RegularUserEventForm(request.POST or None, instance=event)
         if form.is_valid():
             form.save()
             return redirect('events')
-        return render(request, 'events/update_event.html', {"event": event, 'form': form})
+        return render(request, 'events/update_event.html', {"event": event, 'form': form, 'user': request.user})
     else:
 
         messages.success(request, "Before you will be able to add venues, you must log in first.")
@@ -135,8 +148,13 @@ def update_event(request, event_id):
 
 def delete_event(request, event_id):
     event = Event.objects.get(pk=event_id)
-    event.delete()
-    return redirect('events')
+    if request.user == event.manager:
+        event.delete()
+        messages.success(request, "Event deleted.")
+        return redirect('events')
+    else:
+        messages.success(request, "No permission for such action.")
+        return redirect('events')
 
 
 def delete_venue(request, venue_id):

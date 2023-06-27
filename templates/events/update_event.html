@@ -3,7 +3,13 @@
 <style>
     a {text-align: center;}
 </style>
+    {% if user.is_authenticated %}
     <h1>Update Event</h1><br/>
+    Logged as: {{ user }}
+    <br/>
+    Event manager: {{ event.manager }}
+    <br/><br/>
+    {% if user == event.manager %}
         <form action="" method="POST">
             {% csrf_token %}
                 {{form.as_p}}
@@ -12,4 +18,8 @@
             <a><input type="submit" value="Update" class="btn btn-success" ></a>
 
         </form>
+    {% else %}
+    <h2>You don`t have the permission to update this event!</h2>
+    {% endif %}
+{% endif %}
 {% endblock %}

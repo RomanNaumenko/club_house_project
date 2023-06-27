@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from .models import Venue, ClubUser, Event
+from .models import Venue, Event
 # from datetimepicker.widgets import DateTimePicker
 
 
@@ -28,7 +28,7 @@ class VenueForm(ModelForm):
         }
 
 
-class EventForm(ModelForm):
+class SuperUserEventForm(ModelForm):
     class Meta:
         model = Event
         fields = ('name', 'event_date', 'venue', 'manager', 'desc', 'visitors')
@@ -42,17 +42,6 @@ class EventForm(ModelForm):
 
         }
 
-        # event_date = forms.DateTimeField(
-        #     widget=DateTimePicker(
-        #         options={
-        #             'format': 'YYYY-MM-DD HH:mm:ss',
-        #             'showClear': True,
-        #             'sideBySide': True,
-        #         }
-        #     ),
-        #     input_formats=['%Y-%m-%d %H:%M:%S']
-        # )
-
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Event Name'}),
             'event_date': forms.DateTimeInput(
@@ -61,6 +50,31 @@ class EventForm(ModelForm):
             ),
             'venue': forms.Select(attrs={'class': 'form-select', 'placeholder': 'Venue'}),
             'manager': forms.Select(attrs={'class': 'form-select', 'placeholder': 'Manager'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Description'}),
+            'visitors': forms.SelectMultiple(attrs={'class': 'form-control', 'placeholder': 'Visitors'})
+        }
+
+
+class RegularUserEventForm(ModelForm):
+    class Meta:
+        model = Event
+        fields = ('name', 'event_date', 'venue', 'desc', 'visitors')
+        labels = {
+            'name': '',
+            'event_date': '',
+            'venue': 'Venue',
+            'description': 'Description',
+            'visitors': 'Visitors',
+
+        }
+
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Event Name'}),
+            'event_date': forms.DateTimeInput(
+                attrs={'type': 'datetime-local', 'class': 'form-control', 'placeholder': 'DD.MM.YYYY'},
+                format='%Y-%m-%dT%H:%M'
+            ),
+            'venue': forms.Select(attrs={'class': 'form-select', 'placeholder': 'Venue'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Description'}),
             'visitors': forms.SelectMultiple(attrs={'class': 'form-control', 'placeholder': 'Visitors'})
         }
