@@ -19,17 +19,42 @@ from datetime import datetime
 
 # Create your views here.
 def home(request, year=datetime.now().year, month=datetime.now().strftime("%B")):
-    username = None
-    if request.user.is_superuser:
-        username = request.user.get_username()
-    month = month.capitalize()
-    time = datetime.now().strftime('%I:%M %p')
-    month_number = int(list(calendar.month_name).index(month))
-    cal = HTMLCalendar().formatmonth(year, month_number)
-    # context = {"year": year, "month": month, "month_number": month_number, "cal": cal, "time": time,
-    #            "username": username}
 
-    return render(request, 'events/home.html', {"name": username})
+    name = request.user.username
+    if request.user.is_anonymous:
+        name = None
+    month = month.capitalize()
+    # Convert month from name to number
+    month_number = list(calendar.month_name).index(month)
+    month_number = int(month_number)
+
+    # create a calendar
+    cal = HTMLCalendar().formatmonth(
+        year,
+        month_number)
+    # Get current year
+    now = datetime.now()
+    current_year = now.year
+
+    # Query the Events Model For Dates
+    event_list = Event.objects.filter(
+        event_date__year=year,
+        event_date__month=month_number
+    )
+
+    # Get current time
+    time = now.strftime('%I:%M %p')
+    return render(request,
+                  'events/home.html', {
+                      "name": name,
+                      "year": year,
+                      "month": month,
+                      "month_number": month_number,
+                      "cal": cal,
+                      "current_year": current_year,
+                      "time": time,
+                      "event_list": event_list,
+                  })
 
 
 def all_events(request):

@@ -16,7 +16,7 @@ def member_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('calendar_specific', year=datetime.now().year, month=datetime.now().strftime("%B"))
+            return redirect('home', year=datetime.now().year, month=datetime.now().strftime("%B"))
         else:
             messages.success(request, "There was an error while logging. Try again.")
             return redirect('member-login')
@@ -28,7 +28,7 @@ def member_login(request):
 def member_logout(request):
     logout(request)
     messages.success(request, "You were successfully logged out")
-    return redirect('calendar_specific')
+    return redirect('home')
 
 
 def register_user(request):
@@ -42,7 +42,7 @@ def register_user(request):
             user = authenticate(username=username, password=password)
             login(request, user)
             messages.success(request, "Registration successful")
-            return redirect('calendar_specific', year=date.year, month=date.month)
+            return redirect('home', year=date.year, month=date.month)
     else:
         form = RegisterUserForm()
 

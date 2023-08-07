@@ -1,38 +1,63 @@
 {% extends 'base/base.html' %}
 
 {% block content %}
-    <style>
+<div style="text-align: center;">
+	<h1>Hello {{ name }}! Events For {{ month }} {{ year }}</h1>
 
-        h2 {text-align: center;}
-        p {text-align: center;}
-        td {text-align: center;}
-        h1 {text-align: center;}
-        h3 {text-align: center;}
-        h5 {text-align: center;}
-        table {
-            margin-left:auto;
-            margin-right:auto;
-          }
+	As of {{ time }}
+	<br/><br/>
+	{{ cal|safe }}
+	<br/><br/>
+	<h3>Events This Month...</h3>
+</div>
+	{% if event_list %}
+		{% for event in event_list %}
+		<div class="card">
+  <div class="card-header">
+    {{ event }}
+  </div>
+  <div class="card-body">
+    <h5 class="card-title">Venue: {{ event.venue }}</h5>
+    <p class="card-text">
+    	<ul>
+<li>Date: {{ event.event_date }}</li>
 
-    </style>
-    {% csrf_token %}
-    {% if user.is_authenticated %}
-    {% if username %}
-        <h2>Hello {{ username }}, It`s {{ month }} of {{ year }}</h2>
-    {% else %}
-        <h2>Hello, It`s {{ month }} of {{ year }}</h2>
+<li>Venue Website: {{ event.venue.web }}</li>
+<li>Manager: {{ event.manager }}</li>
+<li>Description: {{ event.description }}</li>
+	<li>Attendees:<br/>
+	{% for user in event.attendees.all %}
+{{ user }}<br/>
+	{% endfor %}
+	</li>
+	</ul>
+
+
+
+    </p>
+  </div>
+  {% if user.is_authenticated %}
+    {% if user == event.manager %}
+      <div class="card-footer text-muted">
+
+        <a href="{% url 'update-event' event.id %}" class="btn btn-outline-secondary btn-sm">Update Event</a>
+
+        <a href="{% url 'delete-event' event.id %}" class="btn btn-outline-danger btn-sm">Delete Event</a>
+
+      </div>
     {% endif %}
-        {% if time %}
-            <p> {{ time }} </p>
-        {% endif %}
-    {% else %}
-        <h1>Hello! </h1><br/>
-            <h5>Please <a href="http://127.0.0.1:8000/members/login/">login</a> or <a href="http://127.0.0.1:8000/members/register/">register</a> in order to take part in events</h5>
+  {% endif %}
+</div>
+		<br/>
+		{% endfor %}
 
-        {% endif %}
-    <div style="text-align:center;">
-        <br/><br/>
-        {{ cal|safe }}
-    </div>
+	{% else %}
+	Sorry...There are no events this month...
+	{% endif %}
+
+
+	<br/><br/><br/><br/>
+	Copyright (c) {{ current_year }}
+
 
 {% endblock %}
