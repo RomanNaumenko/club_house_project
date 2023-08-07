@@ -1,12 +1,45 @@
 {% extends 'base/base.html' %}
 {% block content %}
+
     {% if searcher %}
-        <h1>Result of your search:</h1>
-        <br/>
-            {% for venue in venues %}
-                <a href="{% url 'show-venue' venue.id %}">{{ venue.name }}</a> -
-                <a href="{{ venue.web }}">{{ venue.web }}
-            {% endfor %}
+    <h1>Your search result</h1>
+    <h5>Search value: {{searcher}}</h5>
+        <div class="table-container">
+        <table class="table table-striped table-hover table-bordered">
+            <tbody>
+                {% for venue in venues %}
+                <tr>
+                    <td>
+                        <a href="{% url 'show-venue' venue.id %}">{{ venue.name }}</a> - {{ venue.address }}
+                        <ul>
+                            {% if venue.phone %}
+                            <li>Phone: {{ venue.phone }}</li>
+                            {% endif %}
+                            {% if venue.web %}
+                            <li>Webpage: {{ venue.web }}</li>
+                            {% endif %}
+                            {% if venue.postal_code %}
+                            <li>ZIP code: {{ venue.postal_code }}</li>
+                            {% endif %}
+                            {% if venue.email %}
+                            <li>Email: {{ venue.email }}</li>
+                            {% endif %}
+                        </ul>
+                    </td>
+                    <td class="action-buttons">
+                        <a href="{% url 'update-venue' venue.id %}" class="btn btn-primary btn-sm btn-action" title="Update Venue">
+                            <i class="fas fa-pencil-alt"></i> Update
+                        </a>
+                        <a href="{% url 'delete-venue' venue.id %}" class="btn btn-danger btn-sm btn-action" title="Delete Venue">
+                            <i class="fas fa-trash"></i> Delete
+                        </a>
+                    </td>
+                </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     {% else %}
         <h1>You forgot to enter a venue!</h1>
     {% endif %}

@@ -16,4 +16,6 @@ urlpatterns = [
     path('venue_text_download/', views.venue_text_download, name='venue-txt-dwnld'),
     path('venue_csv_download/', views.venue_csv_download, name='venue-csv-dwnld'),
     path('venue_pdf_download/', views.venue_pdf_download, name='venue-pdf-dwnld'),
+    path('my_events/', views.my_events, name='my-events'),
+    path('search_for_events/', views.search_for_events, name='search-event'),
     ]

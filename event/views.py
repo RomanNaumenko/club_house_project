@@ -12,21 +12,24 @@ from reportlab.lib.pagesizes import letter
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.models import User
 from django.contrib import messages
+import calendar
+from calendar import HTMLCalendar
+from datetime import datetime
 
 
 # Create your views here.
-def home(request):
+def home(request, year=datetime.now().year, month=datetime.now().strftime("%B")):
     username = None
-    superuser_events = None
-    user_events = None
-
     if request.user.is_superuser:
-        superuser_events = Event.objects.all().order_by("event_date")
-    if request.user.is_authenticated:
-        pass
+        username = request.user.get_username()
+    month = month.capitalize()
+    time = datetime.now().strftime('%I:%M %p')
+    month_number = int(list(calendar.month_name).index(month))
+    cal = HTMLCalendar().formatmonth(year, month_number)
+    # context = {"year": year, "month": month, "month_number": month_number, "cal": cal, "time": time,
+    #            "username": username}
 
-    return render(request, 'calendar/calendar.html', {"name": username, "superuser_events": superuser_events,
-                                                      "user_events": user_events})
+    return render(request, 'events/home.html', {"name": username})
 
 
 def all_events(request):
@@ -79,6 +82,22 @@ def search_for_venues(request):
                       {'searcher': searcher, 'venues': venues})
     else:
         return render(request, 'events/search_for_venues.html',
+                      {})
+
+
+def search_for_events(request):
+    if request.method == "POST":
+        searcher = request.POST.get("searcher", False)
+
+        if searcher:
+            events = Event.objects.filter(name__contains=searcher)
+        else:
+            events = Event.objects.all().order_by('-event_date', 'venue')
+
+        return render(request, 'events/events.html',
+                      {'searcher': searcher, 'events': events})
+    else:
+        return render(request, 'events/events.html',
                       {})
 
 
@@ -232,3 +251,12 @@ def venue_pdf_download(request):
     buf.seek(0)
 
     return FileResponse(buf, as_attachment=True, filename=f'venue_list_{date}.pdf')
+
+
+def my_events(request):
+    if request.user.is_authenticated:
+        my_events = Event.objects.filter(visitors=request.user.id)
+        return render(request, 'events/my_events.html', {"events": my_events, "user": request.user})
+    else:
+        messages.success(request, "You have not proper authorization to access this page!")
+        return redirect('home')

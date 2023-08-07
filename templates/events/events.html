@@ -1,46 +1,65 @@
 {% extends 'base/base.html' %}
-
 {% block content %}
-    <h1>All events</h1><br/>
-{% for event in events %}
-    <div class="card">
-  <div class="card-header">
-      <h3>{{ event.name }}</h3>
-  <div class="card-body">
-      {% if event.venue %}
-      <h5 class="card-title"><a href="{% url 'show-venue' event.venue.id %}">{{ event.venue }}</a>, {{ event.venue.address }}</h5>
-      {% else %}
-      <h5 class="card-title"> -- </h5>
-      {% endif %}
-      <p class="card-text">
-      <ul>
-      {% if event.event_date %}
-        <li>Date: {{ event.event_date }}</li>
-      {% endif %}
-      {% if event.desc %}
-        <li> Description: {{ event.desc }}</li>
-      {% endif %}
-      {% if event.manager %}
-        <li> Manager: {{ event.manager }}</li>
-      {% endif %}
-      {% if event.visitors %}
-        <li>Visitors:<br/>
-        {% for visitor in event.visitors.all %}
-            {{ visitor }},
-        {% endfor %}</li>
-      {% endif %}
-    </ul>
-    {% if user.is_authenticated %}
-    {% if user == event.manager %}
 
-  </div>
-      <div class="card-footer text-muted">
-      <a href="{% url 'update-event' event.id %}" class="btn btn-outline-warning btn-sm">Update</a>
-      <a href="{% url 'delete-event' event.id %}" class="btn btn-outline-danger btn-sm">Delete</a>
-      </div>
-  </div>
-{% endif %} {% endif %}
-        </div>
-    <br/>
-{% endfor %}
+        <h1>Events</h1>
+
+            <form class="d-flex" method="POST" action="{% url 'search-event' %}">
+                {% csrf_token %}
+                <input class="form-control me-2" type="search" placeholder="Search for events"
+                   aria-label="Search" name="searcher">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+                <br><br>
+            </form>
+            <br/><br/>
+        <h3>Result of the search:</h3>
+        {% if events %}
+            {% for event in events %}
+                <div class="card">
+                    <div class="card-header">
+                        <h3>{{ event.name }}</h3>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            {% if event.venue %}
+                                <a href="{% url 'show-venue' event.venue.id %}">{{ event.venue }}</a>,
+                                {{ event.venue.address }}
+                            {% else %}
+                                Venue: Not specified
+                            {% endif %}
+                        </h5>
+                        <p class="card-text">
+                            <ul>
+                                {% if event.event_date %}
+                                    <li>Date: {{ event.event_date|date:"F j, Y" }}</li>
+                                {% endif %}
+                                {% if event.desc %}
+                                    <li>Description: {{ event.desc }}</li>
+                                {% endif %}
+                                {% if event.manager %}
+                                    <li>Manager: {{ event.manager }}</li>
+                                {% endif %}
+                                {% if event.visitors %}
+                                    <li>Visitors:
+                                        <ul>
+                                            {% for visitor in event.visitors.all %}
+                                                <li>{{ visitor }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </p>
+                    </div>
+                    {% if user.is_authenticated and user == event.manager %}
+                            <div class="card-footer text-muted">
+                                <a href="{% url 'update-event' event.id %}" class="btn btn-primary btn-sm">Update</a>
+                                <a href="{% url 'delete-event' event.id %}" class="btn btn-danger btn-sm">Delete</a>
+                            </div>
+                    {% endif %}
+                </div>
+                <br>
+            {% endfor %}
+        {% else %}
+        <h4>There are no events alike your search value.</h4>
+        {% endif %}
 {% endblock %}

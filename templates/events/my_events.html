@@ -1,0 +1,57 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+
+<h1>My Events</h1>
+<h2>  </h2>
+<h5> Username: {{ user.username }}</h5>
+<h5> Full Name:{{ user.first_name }} {{user.last_name}}</h5>
+    <div class="event-list">
+        {% for event in events %}
+            <div class="card">
+                <div class="card-header">
+                    <h3>{{ event.name }}</h3>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">
+                        {% if event.venue %}
+                            <a href="{% url 'show-venue' event.venue.id %}">{{ event.venue }}</a>,
+                            {{ event.venue.address }}
+                        {% else %}
+                            Venue: Not specified
+                        {% endif %}
+                    </h5>
+                    <p class="card-text">
+                        <ul>
+                            {% if event.event_date %}
+                                <li>Date: {{ event.event_date|date:"F j, Y" }}</li>
+                            {% endif %}
+                            {% if event.desc %}
+                                <li>Description: {{ event.desc }}</li>
+                            {% endif %}
+                            {% if event.manager %}
+                                <li>Manager: {{ event.manager }}</li>
+                            {% endif %}
+                            {% if event.visitors %}
+                                <li>Visitors:
+                                    <ul>
+                                        {% for visitor in event.visitors.all %}
+                                            <li>{{ visitor }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </p>
+                </div>
+                {% if user.is_authenticated and user == event.manager %}
+                    <div class="card-footer text-muted">
+                        <a href="{% url 'update-event' event.id %}" class="btn btn-primary btn-sm">Update</a>
+                        <a href="{% url 'delete-event' event.id %}" class="btn btn-danger btn-sm">Delete</a>
+                    </div>
+                {% endif %}
+            </div>
+            <br>
+        {% endfor %}
+    </div>
+{% endblock %}

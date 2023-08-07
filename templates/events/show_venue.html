@@ -12,6 +12,7 @@
         {% if venue.web %}<li>Web page: <a href="{{venue.web}}">{{ venue.web}}</a></li>{% endif %}
         {% if venue.desc %}<li>Description:{{ venue.desc}}</li>{% endif %}
         <li>Owner: {{ venue_owner }}</li>
+        <li>Owner email: {{ venue_owner.email }}</li>
     </ul>
   </div>
 </div>
