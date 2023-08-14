@@ -4,7 +4,7 @@
     a {text-align: center;}
 </style>
     <h1>Update Venue</h1><br/>
-        <form action="" method="POST">
+        <form action="" method="POST" ENCTYPE="multipart/form-data">
             {% csrf_token %}
                 {{form.as_p}}
             <br/>

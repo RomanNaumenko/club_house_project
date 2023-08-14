@@ -7,7 +7,7 @@ from .models import Venue, Event
 class VenueForm(ModelForm):
     class Meta:
         model = Venue
-        fields = ('name', 'address', 'phone', 'email', 'web', 'desc', 'postal_code')
+        fields = ('name', 'address', 'phone', 'email', 'web', 'desc', 'postal_code', 'venue_image')
         labels = {
             'name': '',
             'address': '',
@@ -15,7 +15,8 @@ class VenueForm(ModelForm):
             'email': '',
             'web': '',
             'description': '',
-            'postal_code': ''
+            'postal_code': '',
+            'venue_image': '',
         }
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Venue Name'}),
