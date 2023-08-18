@@ -65,7 +65,7 @@ def all_events(request):
 def all_venues(request):
     # venues = Venue.objects.all().order_by('?')
     # venues = Venue.objects.all().order_by('name')
-    pagy = Paginator(Venue.objects.all(), 2)
+    pagy = Paginator(Venue.objects.all(), 4)
     page = request.GET.get('page')
     venues = pagy.get_page(page)
     nums = "a" * venues.paginator.num_pages

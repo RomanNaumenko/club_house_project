@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+import datetime
+from django.utils import timezone
 
 
 class Venue(models.Model):
@@ -37,3 +39,14 @@ class Event(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def days_till(self):
+        now = datetime.date.today()
+        date_of_event = self.event_date.date()
+        if date_of_event < now:
+            return "The event has ended."
+        else:
+            days_until = date_of_event - now
+            time_until_event = str(days_until).split(",")[0]
+            return time_until_event

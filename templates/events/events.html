@@ -31,6 +31,7 @@
                             <ul>
                                 {% if event.event_date %}
                                     <li>Date: {{ event.event_date|date:"F j, Y" }}</li>
+                                    <li>Days till the event: {{ event.days_till }}</li>
                                 {% endif %}
                                 {% if event.desc %}
                                     <li>Description: {{ event.desc }}</li>
