@@ -19,7 +19,6 @@ from datetime import datetime
 
 # Create your views here.
 def home(request, year=datetime.now().year, month=datetime.now().strftime("%B")):
-
     name = request.user.username
     if request.user.is_anonymous:
         name = None
@@ -58,8 +57,8 @@ def home(request, year=datetime.now().year, month=datetime.now().strftime("%B"))
 
 
 def all_events(request):
-    events = Event.objects.all().order_by('-event_date', 'venue')
-    return render(request, 'events/events.html', {"events": events})
+    events = Event.objects.filter(approved=True).order_by('-event_date', 'venue')
+    return render(request, 'events/events.html', {"events": events, "total_events": len(events)})
 
 
 def all_venues(request):
@@ -115,12 +114,13 @@ def search_for_events(request):
         searcher = request.POST.get("searcher", False)
 
         if searcher:
-            events = Event.objects.filter(name__contains=searcher)
+            events = Event.objects.filter(name__contains=searcher, approved=True)
         else:
-            events = Event.objects.all().order_by('-event_date', 'venue')
+            events = Event.objects.filter(approved=True).order_by('-event_date', 'venue')
 
+        search_result_amount = len(events)
         return render(request, 'events/events.html',
-                      {'searcher': searcher, 'events': events})
+                      {'searcher': searcher, 'events': events, 'total_events': search_result_amount})
     else:
         return render(request, 'events/events.html',
                       {})
@@ -208,7 +208,7 @@ def delete_venue(request, venue_id):
 
 
 def venue_text_download(request):
-    date = datetime.datetime.now().date()
+    date = datetime.now().date()
     response = HttpResponse(content_type='text/plain')
     response['Content-Disposition'] = f'attachment; filename=venues_list_{date}.txt'
     venues = Venue.objects.all()
@@ -227,7 +227,7 @@ def venue_text_download(request):
 
 
 def venue_csv_download(request):
-    date = datetime.datetime.now().date()
+    date = datetime.now().date()
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = f'attachment; filename=venues_list_{date}.csv'
     venues = Venue.objects.all()
@@ -243,7 +243,7 @@ def venue_csv_download(request):
 
 
 def venue_pdf_download(request):
-    date = datetime.datetime.now().date()
+    date = datetime.now().date()
     #  Create Bytestream buffer
     buf = io.BytesIO()
     c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
@@ -280,8 +280,28 @@ def venue_pdf_download(request):
 
 def my_events(request):
     if request.user.is_authenticated:
-        my_events = Event.objects.filter(visitors=request.user.id)
-        return render(request, 'events/my_events.html', {"events": my_events, "user": request.user})
+        user_events = Event.objects.filter(visitors=request.user.id)
+        return render(request, 'events/my_events.html', {"events": user_events, "user": request.user})
     else:
         messages.success(request, "You have not proper authorization to access this page!")
+        return redirect('home')
+
+
+def approving_panel(request):
+    if request.user.is_superuser:
+        events_for_approval = Event.objects.all().order_by('-event_date')
+        if request.method == "POST":
+            event_ids = request.POST.getlist('boxes')
+            print(event_ids)
+            # UNCHECK EVERY EVENT
+            events_for_approval.update(approved=False)
+            # UPDATE THE DB WITH CHECKED EVENTS
+            for each_id in event_ids:
+                Event.objects.filter(pk=int(float(each_id))).update(approved=True)
+            messages.success(request, "Event list approval has been updated.")
+            return redirect('events')
+        else:
+            return render(request, 'events/admin_approving_panel.html', {"events": events_for_approval, "user": request.user})
+    else:
+        messages.success(request, "You have not proper permission to access this page!")
         return redirect('home')

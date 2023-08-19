@@ -19,4 +19,5 @@ urlpatterns = [
     path('venue_pdf_download/', views.venue_pdf_download, name='venue-pdf-dwnld'),
     path('my_events/', views.my_events, name='my-events'),
     path('search_for_events/', views.search_for_events, name='search-event'),
+    path('admin_approving_panel/', views.approving_panel, name='admin-approving-panel'),
     ]

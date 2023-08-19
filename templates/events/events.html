@@ -11,9 +11,10 @@
                 <br><br>
             </form>
             <br/><br/>
-        <h3>Result of the search:</h3>
+        <h3>Total result: {{ total_events }} </h3>
         {% if events %}
             {% for event in events %}
+
                 <div class="card">
                     <div class="card-header">
                         <h3>{{ event.name }}</h3>
@@ -36,6 +37,7 @@
                                 {% if event.desc %}
                                     <li>Description: {{ event.desc }}</li>
                                 {% endif %}
+                                    <li>Approved: {{ event.approved }} </li>
                                 {% if event.manager %}
                                     <li>Manager: {{ event.manager }}</li>
                                 {% endif %}
@@ -58,6 +60,7 @@
                             </div>
                     {% endif %}
                 </div>
+
                 <br>
             {% endfor %}
         {% else %}

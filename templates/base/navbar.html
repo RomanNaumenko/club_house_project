@@ -18,6 +18,10 @@
             <li><a class="dropdown-item" href="{% url 'add-event' %}">Add Event</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="{% url 'my-events' %}">My Events</a></li>
+            {% if user.is_authenticated %}
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'admin-approving-panel' %}">Admin-Panel</a></li>
+            {% endif %}
             {% endif %}
           </ul>
         </li>

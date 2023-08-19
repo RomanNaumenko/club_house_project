@@ -79,3 +79,33 @@ class RegularUserEventForm(ModelForm):
             'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Description'}),
             'visitors': forms.SelectMultiple(attrs={'class': 'form-control', 'placeholder': 'Visitors'})
         }
+
+
+class AdminSectionEventForm(ModelForm):
+    class Meta:
+        model = Event
+        fields = ('name', 'event_date', 'venue', 'desc', 'visitors')
+        labels = {
+            'name': '',
+            'event_date': '',
+            'venue': 'Venue',
+            'description': 'Description',
+            'visitors': 'Visitors',
+            'manager': 'Manager',
+            'approved': 'Approved'
+
+        }
+
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Event Name'}),
+            'event_date': forms.DateTimeInput(
+                attrs={'type': 'datetime-local', 'class': 'form-control', 'placeholder': 'DD.MM.YYYY'},
+                format='%Y-%m-%dT%H:%M'
+            ),
+            'venue': forms.Select(attrs={'class': 'form-select', 'placeholder': 'Venue'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Description'}),
+            'visitors': forms.SelectMultiple(attrs={'class': 'form-control', 'placeholder': 'Visitors'}),
+            'manager': forms.Select(attrs={'class': 'form-select', 'placeholder': 'Manager'}),
+            'approved': forms.BooleanField()
+        }
+
