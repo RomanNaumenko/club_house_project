@@ -95,8 +95,10 @@ def add_venue(request):
 
 def show_venue_by_id(request, venue_id):
     venue = Venue.objects.get(pk=venue_id)
+    venue_events = venue.event_set.all()
     venue_owner = User.objects.get(pk=venue.owner)
-    return render(request, 'events/show_venue.html', {"venue": venue, "venue_owner": venue_owner})
+    return render(request, 'events/show_venue.html', {"venue": venue, "venue_owner": venue_owner,
+                                                      "venue_events": venue_events})
 
 
 def search_for_venues(request):

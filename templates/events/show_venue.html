@@ -17,6 +17,18 @@
     </ul>
       <br>
         {% if venue.venue_image %}<img src="{{ venue.venue_image.url }}" width="700">{% endif %}
+      <br>
+      <br>
+        {% if venue_events %}
+            <h3>Events that take place here:</h3>
+            {% for event in venue_events %}
+                <a>{{ event.name }}</a>
+            {% endfor %}
+        {% else %}
+            <h3>There is no venues that taking place here for now ...</h3>
+        {% endif %}
+        <br><br><br>
   </div>
 </div>
+
 {% endblock %}
