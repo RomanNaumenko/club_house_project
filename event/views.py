@@ -15,6 +15,7 @@ from django.contrib import messages
 import calendar
 from calendar import HTMLCalendar
 from datetime import datetime
+from django.db.models import Count
 
 
 # Create your views here.
@@ -291,9 +292,17 @@ def approving_panel(request):
     if request.user.is_superuser:
 
         events_for_approval = Event.objects.all().order_by('-event_date')
+        venues = Venue.objects.all()
+
         user_amount = User.objects.all().count()
-        venue_amount = Venue.objects.all().count()
+        venue_amount = venues.count()
         event_amount = events_for_approval.count()
+
+        # venues_with_counts = venues.annotate(event_count=Count('event'))
+        # venue_events = {venue.name: venue.event_count for venue in venues_with_counts}
+        #
+        venue_events = {venue: [event.name for event in venue.event_set.all()] for venue in venues}
+        print(venue_events)
 
         if request.method == "POST":
 
@@ -310,7 +319,9 @@ def approving_panel(request):
 
         else:
             return render(request, 'events/admin_approving_panel.html', {"events": events_for_approval,
+                                                                         "venues": venues,
                                                                          "user": request.user,
+                                                                         "venue_events": venue_events,
                                                                          "user_amount": user_amount,
                                                                          "event_amount": event_amount,
                                                                          "venue_amount": venue_amount})
