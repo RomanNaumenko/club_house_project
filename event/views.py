@@ -289,19 +289,31 @@ def my_events(request):
 
 def approving_panel(request):
     if request.user.is_superuser:
+
         events_for_approval = Event.objects.all().order_by('-event_date')
+        user_amount = User.objects.all().count()
+        venue_amount = Venue.objects.all().count()
+        event_amount = events_for_approval.count()
+
         if request.method == "POST":
+
             event_ids = request.POST.getlist('boxes')
             print(event_ids)
             # UNCHECK EVERY EVENT
             events_for_approval.update(approved=False)
+
             # UPDATE THE DB WITH CHECKED EVENTS
             for each_id in event_ids:
                 Event.objects.filter(pk=int(float(each_id))).update(approved=True)
             messages.success(request, "Event list approval has been updated.")
             return redirect('events')
+
         else:
-            return render(request, 'events/admin_approving_panel.html', {"events": events_for_approval, "user": request.user})
+            return render(request, 'events/admin_approving_panel.html', {"events": events_for_approval,
+                                                                         "user": request.user,
+                                                                         "user_amount": user_amount,
+                                                                         "event_amount": event_amount,
+                                                                         "venue_amount": venue_amount})
     else:
         messages.success(request, "You have not proper permission to access this page!")
         return redirect('home')

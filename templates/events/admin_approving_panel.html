@@ -1,9 +1,25 @@
 {% extends 'base/base.html' %}
 {% block content %}
 
-        <h2>Hello {{ user.name }}! </h2>
-            <h4>Current event`s list:</h4>
+        <h2>Hello {{ user.username }}! </h2>
+            <h3></h3>
+            <table class="table table-boarded">
+                <thead>
+                <tr><th scope="col">Information dashboard</th></tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Amount of events: {{ event_amount }}</td>
+
+                    <td>Amount of venues: {{ venue_amount }}</td>
+
+                    <td>Amount of users: {{ user_amount }}</td>
+                </tr>
+                </tbody>
+            </table>
                 <br><br>
+            <h4>Current event`s list:</h4>
+                <br>
                 <form action="" method="POST">
                     {% csrf_token %}
 
